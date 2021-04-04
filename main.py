@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, DecimalField
+from wtforms import StringField, SubmitField, DecimalField, HiddenField
 from wtforms.validators import DataRequired, InputRequired, Length
 import requests
 import os
@@ -82,13 +82,18 @@ def home():
     return render_template("index.html", movies=all_movies)
 
 
-# ToDo: Pass the movie in, get the data out
 @app.route("/edit", methods=["GET", "POST"])
 def edit():
-    edit_rating_form = RateMovieForm()
-    if edit_rating_form.validate_on_submit():
+    # TODO: I need to review - failed challenge :(
+    form = RateMovieForm()
+    movie_id = request.args.get('id')
+    movie = Movie.query.get(movie_id)
+    if form.validate_on_submit():
+        movie.rating = float(form.new_rating.data)
+        movie.review = form.new_review.data
+        db.session.commit()
         return redirect(url_for('home'))
-    return render_template('edit.html', form=edit_rating_form)
+    return render_template('edit.html', form=form, movie=movie)
 
 
 @app.route("/delete")
@@ -98,4 +103,4 @@ def delete():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5005)
