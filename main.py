@@ -84,21 +84,32 @@ def home():
 
 @app.route("/edit", methods=["GET", "POST"])
 def edit():
-    # TODO: I need to review - failed challenge :(
+    # TODO: I need to review - I failed this challenge... though I did get close :(
     form = RateMovieForm()
+    # Get movie_id from the argument in the index.html <a> tag
     movie_id = request.args.get('id')
+    # Find the movie in the database
     movie = Movie.query.get(movie_id)
     if form.validate_on_submit():
+        # This also works:
+        # movie.rating = float(request.form['new_rating'])
+        # movie.review = request.form['new_review']
         movie.rating = float(form.new_rating.data)
         movie.review = form.new_review.data
-        db.session.commit()
+        db.session.commit()  # Write to database file
         return redirect(url_for('home'))
     return render_template('edit.html', form=form, movie=movie)
 
 
 @app.route("/delete")
 def delete():
-    pass
+    # Get movie_id from the argument in the index.html <a> tag
+    movie_id = request.args.get('id')
+    # Find the movie in the database
+    movie = Movie.query.get(movie_id)
+    # Delete it
+    db.session.delete(movie)
+    db.session.commit()
     return render_template({{url_for('home')}})
 
 
