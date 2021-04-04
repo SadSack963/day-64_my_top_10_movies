@@ -40,14 +40,42 @@ class Movie(db.Model):
 if not os.path.isfile(FILE_URL):
     db.create_all()
 
+# # Create a test movie
+# new_movie = Movie(
+#     title='Phone Booth',
+#     year=2002,
+#     description="Publicist Stuart Shepard finds himself trapped in a phone booth, pinned down by an extortionist's "
+#                 "sniper rifle. Unable to leave or receive outside help, Stuart's negotiation with the caller leads "
+#                 "to a jaw-dropping climax.",
+#     rating=7.3,
+#     ranking=10,
+#     review="My favourite character was the caller.",
+#     img_url="https://image.tmdb.org/t/p/w500/tjrX2oWRCM3Tvarz38zlZM7Uc10.jpg",
+# )
+# db.session.add(new_movie)
+# db.session.commit()
+
 
 # ROUTES
 # ======
 
-# @app.route("/")
-# def home():
-#     return render_template("index.html")
-#
-#
-# if __name__ == '__main__':
-#     app.run(debug=True)
+@app.route("/")
+def home():
+    # Get a list of all movies in the database
+    all_movies = db.session.query(Movie).all()
+    return render_template("index.html", movies=all_movies)
+
+
+@app.route("/edit")
+def edit():
+    return render_template("edit.html")
+
+
+@app.route("/delete")
+def delete():
+    pass
+    return render_template({{url_for('home')}})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
