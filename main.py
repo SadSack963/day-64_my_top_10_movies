@@ -2,10 +2,11 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField
-from wtforms.validators import DataRequired
+from wtforms import StringField, SubmitField, DecimalField
+from wtforms.validators import DataRequired, InputRequired, Length
 import requests
 import os
+
 
 # Create the database file in /database/new-books-collection.db
 FILE_URL = 'sqlite:///database/movies-collection.db'
@@ -56,6 +57,21 @@ if not os.path.isfile(FILE_URL):
 # db.session.commit()
 
 
+class RateMovieForm(FlaskForm):
+    new_rating = DecimalField(
+        label='Your Rating',
+        validators=[DataRequired()],
+    )
+    new_review = StringField(
+        label='Your Review',
+        validators=[InputRequired(), Length(max=1000)],
+    )
+    submit_button = SubmitField(
+        label='Done',
+        render_kw={'btn-primary': 'True'},
+    )
+
+
 # ROUTES
 # ======
 
@@ -66,9 +82,13 @@ def home():
     return render_template("index.html", movies=all_movies)
 
 
-@app.route("/edit")
+# ToDo: Pass the movie in, get the data out
+@app.route("/edit", methods=["GET", "POST"])
 def edit():
-    return render_template("edit.html")
+    edit_rating_form = RateMovieForm()
+    if edit_rating_form.validate_on_submit():
+        return redirect(url_for('home'))
+    return render_template('edit.html', form=edit_rating_form)
 
 
 @app.route("/delete")
