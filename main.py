@@ -33,8 +33,8 @@ class Movie(db.Model):
     review = db.Column('review', db.String(1000), nullable=False)
     img_url = db.Column('img_url', db.String(1000), nullable=False)
 
-    def __repl__(self):
-        return f'<Movie: {self.title}'
+    def __repr__(self):
+        return f'<Movie: {self.title}>'
 
 
 # Create the database file and tables
@@ -55,6 +55,11 @@ if not os.path.isfile(FILE_URL):
 # )
 # db.session.add(new_movie)
 # db.session.commit()
+# # Print Out Movie Title
+# movie = Movie.query.get(1)
+# print(repr(movie))  # or print(movie.__repr__())
+# # >>> <Movie: Phone Booth>
+# exit()
 
 
 class RateMovieForm(FlaskForm):
@@ -68,6 +73,17 @@ class RateMovieForm(FlaskForm):
     )
     submit_button = SubmitField(
         label='Done',
+        render_kw={'btn-primary': 'True'},
+    )
+
+
+class AddMovieForm(FlaskForm):
+    new_movie = StringField(
+        label='Movie Title',
+        validators=[InputRequired(), Length(max=1000)],
+    )
+    submit_button = SubmitField(
+        label='Add',
         render_kw={'btn-primary': 'True'},
     )
 
@@ -111,6 +127,28 @@ def delete():
     db.session.delete(movie)
     db.session.commit()
     return render_template({{url_for('home')}})
+
+
+@app.route("/add", methods=["GET", "POST"])
+def add():
+    form = AddMovieForm()
+    if form.validate_on_submit():
+        movie_title = form.new_movie.data
+        print(movie_title)
+        # TODO: Get movie info from API
+        # new_movie = Movie(
+        #     title=movie_title,
+        #     year=movie_year,
+        #     description=movie_description,
+        #     rating=movie_rating,
+        #     ranking=movie_ranking,
+        #     review=movie_review,
+        #     img_url=movie_img_url,
+        # )
+        # db.session.add(new_movie)
+        # db.session.commit()
+        return redirect(url_for('home'))
+    return render_template('add.html', form=form)
 
 
 if __name__ == '__main__':
