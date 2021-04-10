@@ -94,6 +94,7 @@ class AddMovieForm(FlaskForm):
 def home():
     # Get a list of all movies in the database
     all_movies = db.session.query(Movie).all()
+    print(all_movies)
     return render_template("index.html", movies=all_movies)
 
 
