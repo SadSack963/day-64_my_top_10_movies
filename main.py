@@ -4,9 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DecimalField, HiddenField
 from wtforms.validators import DataRequired, InputRequired, Length
-import requests
 import os
-
+import tmdb
 
 # Create the database file in /database/new-books-collection.db
 FILE_URL = 'sqlite:///database/movies-collection.db'
@@ -134,21 +133,35 @@ def add():
     form = AddMovieForm()
     if form.validate_on_submit():
         movie_title = form.new_movie.data
-        print(movie_title)
-        # TODO: Get movie info from API
-        # new_movie = Movie(
-        #     title=movie_title,
-        #     year=movie_year,
-        #     description=movie_description,
-        #     rating=movie_rating,
-        #     ranking=movie_ranking,
-        #     review=movie_review,
-        #     img_url=movie_img_url,
-        # )
-        # db.session.add(new_movie)
-        # db.session.commit()
-        return redirect(url_for('home'))
+        # Get movie info from API
+        json = tmdb.search_movie(movie_title)
+        return render_template('select.html', data=json)
     return render_template('add.html', form=form)
+
+
+@app.route('/find')
+def find_movie():
+    # TODO: Get movie details and add to database
+    movie_id = request.args.get('id')
+    movie = tmdb.get_movie_info(movie_id)
+
+    base_url = 'https://image.tmdb.org/t/p/'
+    file_size = 'original'
+    file_path = movie['poster_path']
+    img_url = base_url + file_size + file_path
+
+    new_movie = Movie(
+        title=movie['title'],
+        year=movie['release_date'][0:3],
+        description=movie['overview'],
+        rating=movie['vote_average'],
+        ranking=movie['popularity'],
+        review=movie['tagline'],
+        img_url=img_url,
+    )
+    db.session.add(new_movie)
+    db.session.commit()
+    return redirect(url_for('home'))
 
 
 if __name__ == '__main__':
