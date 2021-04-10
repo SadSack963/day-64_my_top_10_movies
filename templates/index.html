@@ -19,6 +19,8 @@
     <h1 class="heading">My Top 10 Movies</h1>
     <p class="description">These are my all time favourite movies.</p>
 
+    {% include 'attribution.html' %}
+
     {% if movies != None %}
     {% for movie in movies %}
     <div class="card">
@@ -51,6 +53,5 @@
 <div class="container text-center add">
     <a href="{{ url_for('add') }}" class="button">Add Movie</a>
 </div>
-{% include 'attribution.html' %}
 
 {% endblock %}

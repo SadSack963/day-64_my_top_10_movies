@@ -28,8 +28,8 @@ class Movie(db.Model):
     year = db.Column('year', db.String(5), nullable=False)
     description = db.Column('description', db.String(250), nullable=False)
     rating = db.Column('rating', db.Float(), nullable=False)
-    ranking = db.Column('ranking', db.Integer(), nullable=False)
-    review = db.Column('review', db.String(1000), nullable=False)
+    ranking = db.Column('ranking', db.Integer(), nullable=True)
+    review = db.Column('review', db.String(1000), nullable=True)
     img_url = db.Column('img_url', db.String(1000), nullable=False)
 
     def __repr__(self):
@@ -93,7 +93,11 @@ class AddMovieForm(FlaskForm):
 @app.route("/")
 def home():
     # Get a list of all movies in the database
-    all_movies = db.session.query(Movie).all()
+    all_movies = db.session.query(Movie).order_by('rating').all()
+    number_of_movies = len(all_movies)
+    for i, movie in enumerate(all_movies):
+        movie.ranking = number_of_movies - i
+    db.session.commit()  # Write to database file
     return render_template("index.html", movies=all_movies)
 
 
@@ -125,7 +129,7 @@ def delete():
     # Delete it
     db.session.delete(movie)
     db.session.commit()
-    return render_template({{url_for('home')}})
+    return redirect(url_for('home'))
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -163,7 +167,6 @@ def find_movie():
         year=movie['release_date'][0:3],
         description=movie['overview'],
         rating=movie['vote_average'],
-        ranking=movie['popularity'],
         review=movie['tagline'],
         img_url=img_url,
     )
