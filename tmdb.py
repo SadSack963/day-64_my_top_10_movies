@@ -49,16 +49,6 @@ def search_movie(title):
     return response.json()
 
 
-"""
-"In order to generate a fully working image URL, you'll need 3 pieces of data. Those pieces are a base_url, a file_size and a file_path."
-
-You can get the images sizes from GET /configuration, e.g. paste this into your browser address bar:
-
-https://api.themoviedb.org/3/configuration?api_key=<your_api_key>
-
-"""
-
-
 def get_movie_info(movie_id):
     url = 'https://api.themoviedb.org/3/movie/'
 

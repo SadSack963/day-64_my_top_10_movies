@@ -245,3 +245,8 @@ p.overview {
 .release_date {
   font-weight: normal;
 }
+
+.attribution {
+  margin-left:10rem;
+  width:10rem;
+}

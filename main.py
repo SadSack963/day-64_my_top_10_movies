@@ -94,7 +94,6 @@ class AddMovieForm(FlaskForm):
 def home():
     # Get a list of all movies in the database
     all_movies = db.session.query(Movie).all()
-    print(all_movies)
     return render_template("index.html", movies=all_movies)
 
 
@@ -146,6 +145,14 @@ def find_movie():
     movie_id = request.args.get('id')
     movie = tmdb.get_movie_info(movie_id)
 
+    """
+    "In order to generate a fully working image URL, you'll need 3 pieces of data. 
+    Those pieces are a base_url, a file_size and a file_path."
+
+    You can get the images sizes from GET /configuration, e.g. paste this into your browser address bar:
+    https://api.themoviedb.org/3/configuration?api_key=<your_api_key>
+
+    """
     base_url = 'https://image.tmdb.org/t/p/'
     file_size = 'original'
     file_path = movie['poster_path']
