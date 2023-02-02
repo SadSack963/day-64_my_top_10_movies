@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request
 from flask_bootstrap import Bootstrap
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy  # pip install Flask-SQLAlchemy
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, DecimalField, HiddenField
 from wtforms.validators import DataRequired, InputRequired, Length
@@ -8,7 +8,7 @@ import os
 import tmdb
 
 # Create the database file in /database/new-books-collection.db
-FILE_URL = 'sqlite:///database/movies-collection.db'
+FILE_URL = 'sqlite:///movies-collection.db'
 
 app = Flask(__name__)
 # Config for Bootstrap
@@ -38,7 +38,8 @@ class Movie(db.Model):
 
 # Create the database file and tables
 if not os.path.isfile(FILE_URL):
-    db.create_all()
+    with app.app_context():
+        db.create_all()
 
 # # Create a test movie
 # new_movie = Movie(
@@ -105,6 +106,7 @@ def home():
 def edit():
     # TODO: I need to review - I failed this challenge... though I did get close :(
     form = RateMovieForm()
+    print(f'{request.args = }')
     # Get movie_id from the argument in the index.html <a> tag
     movie_id = request.args.get('id')
     # Find the movie in the database
@@ -148,6 +150,7 @@ def find_movie():
     # TODO: Get movie details and add to database
     movie_id = request.args.get('id')
     movie = tmdb.get_movie_info(movie_id)
+    # print(f'{type(movie) = }')
 
     """
     "In order to generate a fully working image URL, you'll need 3 pieces of data. 

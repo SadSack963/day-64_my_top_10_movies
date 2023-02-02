@@ -42,7 +42,7 @@ def search_movie(title):
         'Content-Type': 'application/json;charset=utf-8',
     }
 
-    response = requests.get(url,params=query, headers=header)
+    response = requests.get(url, params=query, headers=header)
     response.raise_for_status()
 
     # print(response.json())
@@ -63,4 +63,10 @@ def get_movie_info(movie_id):
     response = requests.get(url + movie_id, params=query, headers=header)
     response.raise_for_status()
 
+    # print(response.json())
     return response.json()
+
+
+if __name__ == '__main__':
+    # search_movie('Matrix')
+    get_movie_info('603')
